@@ -7,7 +7,7 @@ Status: **preview**. The action is public. The ctfkit binary it downloads is pub
 repository and is available to compliance.tf customers on request:
 [request access](https://compliance.tf/contact/?category=ctfkit).
 
-Full documentation: https://docs.compliance.tf/ctfkit/github-actions/
+Full documentation: https://compliance.tf/docs/ctfkit/github-actions/
 
 ## Before you start
 
@@ -45,7 +45,7 @@ The action checks the downloaded archive against the release `checksums.txt` bef
 job fails on findings at or above `fail-on` (default `error`).
 
 Inputs, outputs, the `report` command and multi-root setups are described in the
-[documentation](https://docs.compliance.tf/ctfkit/github-actions/).
+[documentation](https://compliance.tf/docs/ctfkit/github-actions/).
 
 ## License
 
