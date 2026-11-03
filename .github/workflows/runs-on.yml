@@ -1,0 +1,15 @@
+name: RunsOn
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64/env=ci
+    steps:
+      - run: echo "Hello from RunsOn"
