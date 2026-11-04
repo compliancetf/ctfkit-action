@@ -134,8 +134,8 @@ inputs:
     description: >-
       Token for the release download. The default job token reads public releases and the releases
       of the repository the workflow runs in; a permissions block that omits contents: read takes
-      that away. The default repository, compliancetf/ctfkit, is private: from another repository,
-      pass a fine-grained token with Contents: read on it.
+      that away. The default repository, compliancetf/ctfkit, is public, so the default token reads
+      it; for a private copy named in repository, pass a token with Contents: read on it.
     required: false
     default: ${{ github.token }}
   fail-on:
@@ -183,7 +183,7 @@ inputs:
   comment-token:
     description: >-
       Token for the pull request comment only, separate from github-token, which downloads the
-      release and often holds a read-only token for a private ctfkit repository.
+      release and may hold a read-only token for a private copy of ctfkit.
       The default job token can comment when the job has pull-requests: write; on a pull request
       from a fork it is read-only, so the comment fails with a warning.
     required: false
@@ -721,7 +721,7 @@ runs:
     # missing artifact, and a findings file committed to the repository is never uploaded.
     - name: Upload findings to the GitHub Security tab
       if: ${{ always() && inputs.sarif == 'true' && env.CTFKIT_SARIF_UPLOAD != '' }}
-      uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3.38.2
+      uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
       with:
         sarif_file: ${{ env.CTFKIT_SARIF_UPLOAD }}
         category: ctfkit
