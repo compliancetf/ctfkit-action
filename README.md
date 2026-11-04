@@ -6,18 +6,13 @@ installs a pinned ctfkit release, runs it over what your workflow produced, writ
 job summary, uploads the findings to the Security tab when `sarif` is on and, if you ask, keeps a
 comment on the pull request up to date.
 
-Status: **preview**. The action is public. The ctfkit binary it downloads is published in the
-private `compliancetf/ctfkit` repository and is available to compliance.tf customers:
-[request access](https://compliance.tf/contact/?category=ctfkit).
+Status: **preview**. The action and ctfkit are open source: the action downloads the binary from
+the public releases of [`compliancetf/ctfkit`](https://github.com/compliancetf/ctfkit) with the
+default job token, so a workflow needs no extra secret.
 
 Full documentation: https://compliance.tf/docs/ctfkit/github-actions/
 
 ## Quick start
-
-1. Request access. Once approved, your GitHub user can read the `compliancetf/ctfkit` releases.
-2. Create a fine-grained personal access token: resource owner `compliancetf`, repository
-   `ctfkit`, permission `Contents: read`.
-3. Store it as a repository or organization secret, for example `CTFKIT_RELEASE_TOKEN`.
 
 This workflow scans configuration on every pull request. It needs no `init`, no plan and no cloud
 credentials:
@@ -40,15 +35,15 @@ jobs:
           command: scan
           stage: pre_plan
           chdir: infra
-          version: v0.3.0-preview.2 # the ctfkit release to install
-          github-token: ${{ secrets.CTFKIT_RELEASE_TOKEN }}
+          version: v0.3.0-preview.5 # the ctfkit release to install
           pr-comment: 'true'
           sarif: 'false' # 'true' when the repository has code scanning
 ```
 
 The job fails on findings at or above `fail-on` (default `error`). Start a rollout with
-`fail-on: never` to see the findings without blocking anyone. Pull requests from forks get no
-secrets, so the download step fails there; the documentation covers fork setups.
+`fail-on: never` to see the findings without blocking anyone. Pull requests from forks get a
+read-only job token: the download still works, the comment and the Security tab upload do not; the
+documentation covers fork setups.
 
 ## Commands
 
@@ -67,7 +62,7 @@ so assume a role with OIDC in an earlier step. `sign` and `apply` refuse a set w
 missing or extra file, since each file must match its digest in the candidate, and `apply` also
 checks that the verdict signature binds the plan. The
 [documentation](https://compliance.tf/docs/ctfkit/github-actions/) links to a copyable three-job
-workflow in the ctfkit repository (readable with access).
+workflow in the ctfkit repository.
 
 ## What a pull request cannot change
 
@@ -98,8 +93,8 @@ further:
 
 - `sha256`: the digest of the archive you reviewed. A different archive fails the step.
 - `verify-attestation: 'true'`: checks the GitHub build provenance attestation from the ctfkit
-  release workflow for that tag. Current releases have no attestation, so turning it on fails the
-  step today; it is off by default.
+  release workflow for that tag. Releases from v0.3.0-preview.4 on carry one; older releases have
+  none and fail the check, so it is off by default.
 
 `verify-lock: 'true'` also runs `ctfkit verify-lock` before the command and fails the step when a
 lock file lacks the hashed compliance.tf wrapper entry or still installs the upstream provider it
