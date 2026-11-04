@@ -2,7 +2,7 @@
 
 Add this action to a pull request workflow and every Terraform or OpenTofu change it runs on gets
 the same compliance checks. Findings name the compliance.tf module that closes the gap. The action
-installs a pinned ctfkit release, runs it over what your workflow produced, writes a report to the
+installs a ctfkit release, the newest unless you pin one, runs it over what your workflow produced, writes a report to the
 job summary, uploads the findings to the Security tab when `sarif` is on and, if you ask, keeps a
 comment on the pull request up to date.
 
@@ -30,12 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: compliancetf/ctfkit-action@v0.3.0
+      - uses: compliancetf/ctfkit-action@v0
         with:
           command: scan
           stage: pre_plan
           chdir: infra
-          version: v0.3.0-preview.5 # the ctfkit release to install
           pr-comment: 'true'
           sarif: 'false' # 'true' when the repository has code scanning
 ```
@@ -84,17 +83,30 @@ The repository under analysis is treated as untrusted input:
 - The comment step only updates a comment its own token wrote. There is one comment per command
   and directory, so a matrix over several roots keeps one each.
 
-## Pinning the binary
+## Pinning
 
-`version` is required and has no default: pin the release you reviewed. The archive is checked
+`@v0` follows the newest v0 release of this action, and `version` defaults to `latest`, the newest
+ctfkit release when the job runs, so the quick start never goes stale. For a reproducible
+pipeline, pin both: the action to a release commit SHA, which Dependabot can bump, and `version`
+to the ctfkit release you reviewed:
+
+```yaml
+      - uses: compliancetf/ctfkit-action@<release commit SHA> # vX.Y.Z
+        with:
+          version: v1.2.3 # the ctfkit release you reviewed
+```
+
+The `ctfkit-version` output names the release that was installed, with `latest` resolved; pass it
+to later jobs that must run the same release. The archive is checked
 against the release `checksums.txt` before it is unpacked. That file comes from the same release
 and token, so it proves the download is intact, not who published it. Two optional inputs go
 further:
 
-- `sha256`: the digest of the archive you reviewed. A different archive fails the step.
+- `sha256`: the digest of the archive you reviewed. A different archive fails the step. It needs a
+  pinned `version`.
 - `verify-attestation: 'true'`: checks the GitHub build provenance attestation from the ctfkit
-  release workflow for that tag. Releases from v0.3.0-preview.4 on carry one; older releases have
-  none and fail the check, so it is off by default.
+  release workflow for that tag. Every ctfkit release carries one; a release from a private copy
+  without that workflow fails the check, so it is off by default.
 
 `verify-lock: 'true'` also runs `ctfkit verify-lock` before the command and fails the step when a
 lock file lacks the hashed compliance.tf wrapper entry or still installs the upstream provider it
@@ -108,6 +120,7 @@ publish and its input is on.
 
 | Output | Value |
 |---|---|
+| `ctfkit-version` | the ctfkit release installed, such as `v1.2.3` |
 | `receipt` | path to the evidence receipt; `report` only |
 | `sarif` | path to the SARIF findings |
 | `markdown` | path to the markdown written to the job summary |
