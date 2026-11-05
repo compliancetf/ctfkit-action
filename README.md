@@ -6,7 +6,7 @@ installs a ctfkit release, the newest unless you pin one, runs it over what your
 job summary, uploads the findings to the Security tab when `sarif` is on and, if you ask, keeps a
 comment on the pull request up to date.
 
-Status: **preview**. The action and ctfkit are open source: the action downloads the binary from
+The action and ctfkit are open source: the action downloads the binary from
 the public releases of [`compliancetf/ctfkit`](https://github.com/compliancetf/ctfkit) with the
 default job token, so a workflow needs no extra secret.
 
@@ -51,8 +51,8 @@ documentation covers fork setups.
 | `scan` with `stage: pre_plan` | configuration in `chdir` | checkout only |
 | `scan` | plan JSON from `show -json` | `init`, `plan`, `show -json` |
 | `report` (default) | the module cache in `path`, plus `test -json` output if you pass it | `init` |
-| `plan` (preview) | configuration in `chdir`; creates the artifact set in `artifacts` | checkout, terraform or tofu installed |
-| `sign`, `apply` (preview) | the artifact set in `artifacts` | the previous job's artifact downloaded, the same terraform or tofu binary as `plan` |
+| `plan` | configuration in `chdir`; creates the artifact set in `artifacts` | checkout, terraform or tofu installed |
+| `sign`, `apply` | the artifact set in `artifacts` | the previous job's artifact downloaded, the same terraform or tofu binary as `plan` |
 
 `plan`, `sign` and `apply` split a governed apply across three jobs. `plan` writes the plan and a
 candidate, `sign` adds a verdict signed by the `signer` you name, and `apply` applies the sealed
