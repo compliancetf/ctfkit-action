@@ -73,8 +73,12 @@ The repository under analysis is treated as untrusted input:
   exception. A `config`, `exceptions` or `catalog` path you set must name a file the pull request
   cannot change. `config` and `exceptions` default to the files in [`defaults/`](defaults):
   every setting at the ctfkit default, and an empty exception registry. `catalog` defaults to
-  `embedded`, the catalog compiled into the pinned binary. `plan`, `sign` and `apply` take their
-  policy from signed inputs: `profile`, `floor` and `bundle-dir`.
+  `embedded`, the catalog compiled into the pinned binary (the CIS AWS Benchmark v6.0 controls).
+  `catalog: pull` downloads the full catalog with `ctfkit catalog pull` (ctfkit 0.7.0 or later, a
+  paid plan, and the registry token in `TF_TOKEN_registry_compliance_tf` on the step) into a
+  directory outside the output directory, and deletes it when the step ends. A failed pull fails
+  the step with exit code `2`. `plan`, `sign` and `apply` take their policy from signed inputs:
+  `profile`, `floor` and `bundle-dir`.
 - In the `report` and `scan` output, module sources and finding messages are escaped before they
   reach the job summary or the comment, so they cannot add HTML or an `@` mention, or break out of
   a table or code span.
