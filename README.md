@@ -1,14 +1,28 @@
 # ctfkit by compliance.tf: GitHub Action
 
-Add this action to a pull request workflow and every Terraform or OpenTofu change it runs on gets
-the same compliance checks. Findings name the compliance.tf module that closes the gap. The action
-installs a ctfkit release, the newest unless you pin one, runs it over what your workflow produced, writes a report to the
-job summary, uploads the findings to the Security tab when `sarif` is on and, if you ask, keeps a
-comment on the pull request up to date.
+Run the same Terraform and OpenTofu checks on every pull request, and see which compliance.tf
+module closes each gap.
+
+ctfkit by compliance.tf is an open source (Apache-2.0) analyzer runtime for Terraform and
+OpenTofu. The action installs a ctfkit release, the newest unless you pin one, and runs it over
+what your workflow produced. It writes a report to the job summary, uploads the findings to the
+Security tab when `sarif` is on and, if you ask, keeps a comment on the pull request up to date.
+
+It produces findings and leaves the decision to you. It does not replace Checkov, Trivy, tfsec,
+OPA, Sentinel, tfpolicy or a CSPM. Checkov, Trivy and tfsec report misconfigured resources; ctfkit
+reports what your modules enforce and which module closes each gap. Its findings feed OPA and
+tfpolicy, and it runs alongside Sentinel.
+
+| `command` | Status |
+|---|---|
+| `scan`, `report` | available |
+| `plan`, `sign`, `apply` (governed apply across three jobs) | not available: needs a signed organization profile, which compliance.tf does not issue |
+
+Findings, SARIF, the receipt and the evidence pack are not signed.
 
 The action and ctfkit are open source: the action downloads the binary from
 the public releases of [`compliancetf/ctfkit`](https://github.com/compliancetf/ctfkit) with the
-default job token, so a workflow needs no extra secret.
+default job token, so the download needs no extra secret.
 
 Full documentation: https://compliance.tf/docs/ctfkit/github-actions/
 

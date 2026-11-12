@@ -1,7 +1,7 @@
-name: ctfkit report
+name: ctfkit by compliance.tf
 description: >-
-  Run ctfkit by compliance.tf over an initialized Terraform or OpenTofu root and publish its
-  findings, its evidence receipt and a markdown summary.
+  Run ctfkit by compliance.tf on Terraform or OpenTofu and publish findings, an evidence receipt
+  and a markdown summary.
 author: compliance.tf
 
 branding:
@@ -778,7 +778,7 @@ runs:
           if command -v jq > /dev/null 2>&1; then
             upload="${out_dir}/findings.upload.sarif"
             jq --arg base "${prefix}" '
-              .runs[] |= (.results |= map(select((.suppressions // []) | length == 0)))
+              .runs[] |= (.results = ((.results // []) | map(select((.suppressions // []) | length == 0))))
               | .runs[].results[]?.locations[]? |= (
                 if $base != "" and (.physicalLocation.artifactLocation.uri? | type) == "string"
                 then .physicalLocation.artifactLocation.uri |=
