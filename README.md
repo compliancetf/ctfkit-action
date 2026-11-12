@@ -122,6 +122,17 @@ The job summary, the Security tab upload and the pull request comment run before
 applied, so a failing run still shows what it found. Each one runs only when there is something to
 publish and its input is on.
 
+The Security tab upload is a copy of the SARIF with two changes:
+
+- Findings an approved exception covers are left out. Code scanning ignores the SARIF
+  `suppressions` member and would show them as open alerts. The `sarif` output, the receipt and the
+  job summary still list them as suppressed.
+- Locations get the `chdir` prefix back, so code scanning finds the file.
+
+Each upload replaces the previous analysis with the same `category` on the same commit. The default
+is `ctfkit`; a workflow with two ctfkit steps gives each its own, for example `ctfkit/pre_plan` and
+`ctfkit/post_plan`.
+
 | Output | Value |
 |---|---|
 | `ctfkit-version` | the ctfkit release installed, such as `v1.2.3` |
