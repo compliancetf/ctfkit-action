@@ -135,6 +135,40 @@ The receipt records which controls the compliance.tf modules in the configuratio
 from the manifests written at `init`. It is not a live-state assertion and not an attestation by
 compliance.tf.
 
+## Evidence pack on the release
+
+`report` (ctfkit 0.8.0 or later) also writes the evidence pack: `evidence-pack.pdf` for an auditor
+to open directly, and `evidence-pack.zip` with the PDF, the pack as Markdown and JSON, the module
+manifests, the receipt and the SARIF. With `release-assets: 'true'` the action uploads both files
+to the GitHub release the workflow runs for, so QA staff and auditors download them from the
+release page:
+
+```yaml
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write # to upload release assets
+
+jobs:
+  ctfkit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: tofu init -input=false
+      - uses: compliancetf/ctfkit-action@v0
+        with:
+          release-assets: 'true'
+```
+
+- A `release` event counts, and so does a push of a tag whose release exists. Any other run with
+  `release-assets: 'true'` fails the step.
+- The upload uses `github-token`, which needs `contents: write`. A re-run replaces the files.
+- A report with findings (exit `1`) still uploads its pack. After any other exit code nothing is
+  uploaded and the step fails.
+- The pack is not signed.
+
 Every input, the multi-root setup and the fork rules are in the
 [documentation](https://compliance.tf/docs/ctfkit/github-actions/).
 
